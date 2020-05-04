@@ -27,25 +27,26 @@ export default {
     }
   },
   methods: {
-    getNextCall: function (calls) {
-      if (calls.length) {
-      let i = 0;
-      while (i < calls.length) {
-        const isNextCall = new Date(calls[i].time).getTime() > Date.now();
-        if (isNextCall) {
-          this.nextCall = calls[i];
-          break;
-        }
-        i++;
-      }
+    getNextCall: function () {
+      if (this.calls.length) {
+        let nextCall = null;
+        this.calls.forEach( (call) => {
+          if (!call.pastCall) {
+            if (nextCall === null) {
+              nextCall = call;
+            } else if (call.time < nextCall.time) {
+              nextCall = call;
+            }
+          }
+        });
+        this.nextCall = nextCall;
       }
     },
     addCall: function (call) {
       const calls = this.calls;
       calls.push(call);
       localStorage.setItem('calls' , JSON.stringify(calls));
-      this.sortCalls({field: 'time', order: 'asc'});
-      this.getNextCall(calls);
+      this.getNextCall();
     },
     sortCalls: function (data) {
       const {field, order} = data;
@@ -62,22 +63,27 @@ export default {
       })
     },
     handleDeleteCall: function (id) {
-      this.calls = this.calls.filter((item)=> id !== item.id);
+      this.calls = this.calls.filter((item) => id !== item.id);
       localStorage.setItem('calls' , JSON.stringify(this.calls));
-      if (id === this.nextCall.id) {
-        this.nextCall = {};
-      }
-    }
+    },
+    setPastCall() {
+      this.calls.forEach( (call) => {
+        if (call.time < new Date()) call.pastCall = true;
+      })
+    },
   },
   mounted () {
     const data = localStorage.getItem('calls');
+    setInterval(this.setPastCall, 1000);
+    setInterval(this.getNextCall, 1000);
     if (data) {
       const calls = JSON.parse(data);
-      this.getNextCall(calls);
       this.calls = calls.map((call) => {
         call.time = new Date(call.time);
         return call;
       })
+      this.setPastCall();
+      this.getNextCall();
       this.sortCalls({field: 'time', order: 'asc'});
     }
   },

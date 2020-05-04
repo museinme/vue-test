@@ -1,5 +1,5 @@
 <template>
-  <div class="call-next" v-if="nextCall.name">
+  <div class="call-next" v-if="nextCall && Object.keys(nextCall).length !== 0">
     <h2 class="call-next__title">Next call</h2>
     <div class="call-next__container">
       <span class="call-next__item call-next__name">{{ nextCall.name }}</span>

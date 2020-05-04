@@ -52,11 +52,9 @@ export default {
   },
   data() {
     return {
-      id: 0,
       name: '',
       phone: '',
       time: null,
-      checked: false,
     }
   },
   methods: {
@@ -64,7 +62,6 @@ export default {
       this.name = '';
       this.phone = null;
       this.time = null;
-      this.checked = false;
     },
     onSubmit: function () {
       let timeArr = this.time.split(':');
@@ -72,13 +69,12 @@ export default {
       time.setMinutes(timeArr[0], timeArr[1]);
 
       this.$emit('add-call', {
-        id: this.id,
+        id: Math.random().toString(36).substring(7),
         name: this.name,
         phone: this.phone,
         time: time,
-        checked: this.checked,
+        pastCall: time < Date.now(),
       });
-      this.id++;
       this.resetForm();
     }
   }

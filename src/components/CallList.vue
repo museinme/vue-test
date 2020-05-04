@@ -20,12 +20,12 @@
         <span class="table-list__header__item"></span>
         <span class="table-list__header__item"></span>
       </div>
-      <li class="table-list__row" v-for="call in calls" :key="call.id + call.phone">
+      <li class="table-list__row" v-for="call in calls" :key="call.id">
         <span class="table-list__row__item name">{{call.name}}</span>
         <span class="table-list__row__item phone">{{call.phone}}</span>
         <span class="table-list__row__item time">{{formatTime(call.time)}}</span>
         <span class="table-list__row__item table-list__row__item_delete" @click="deleteCall(call.id)">delete</span>
-        <input class="table-list__row__item checkbox" type="checkbox" :checked="call.checked" :disabled="call.checked">
+        <input class="table-list__row__item checkbox" type="checkbox" :checked="call.pastCall" :disabled="call.pastCall">
       </li>
     </ul>
   </div>
@@ -62,20 +62,9 @@ export default {
 
       this.$emit('sort-calls', {field, order})
     },
-    setPastCall() {
-      this.calls.forEach( (call) => {
-        const callTime = new Date(call.time);
-        const currTime = new Date();
-
-        if (callTime < currTime) call.checked = true;
-      })
-    },
     deleteCall(id) {
       this.$emit('delete-call', id);
     },
-  },
-  updated() {
-    this.setPastCall()
   },
 }
 </script>
